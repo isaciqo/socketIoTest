@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objeto Arrastável</title>
+    <style>
+        #objeto {
+            width: 100px;
+            height: 100px;
+            background-color: blue;
+            position: absolute;
+        }
+        #objeto {
+            font-size: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="objeto" draggable="true"></div>
+    <div id="objeto2" draggable="true">
+        tableRise
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on("objectMoved", (data) => {
+            const objeto = document.getElementById("objeto");
+            objeto.style.left = data.x + "px";
+            objeto.style.top = data.y + "px";
+        });
+
+        const objeto = document.getElementById("objeto");
+
+        // objeto.addEventListener("mousedown", function(event) {
+        //     const offsetX = event.clientX - objeto.getBoundingClientRect().left;
+        //     const offsetY = event.clientY - objeto.getBoundingClientRect().top;
+
+        //     document.addEventListener("mousemove", (event) => {
+        //         const x = event.clientX - offsetX;
+        //         const y = event.clientY - offsetY;
+        //         objeto.style.left = x + "px";
+        //         objeto.style.top = y + "px";
+        //         socket.emit("move", { x, y });
+        //     });
+
+        //     document.addEventListener("mouseup", () => {
+        //         document.removeEventListener("mousemove", mouseMoveHandler);
+        //     });
+        // });
+
+        objeto.addEventListener("mousedown", function(event) {
+            if (event.target === objeto) { // Verifica se o evento ocorreu no objeto
+                isDragging = true;
+                offsetX = event.clientX - objeto.getBoundingClientRect().left;
+                offsetY = event.clientY - objeto.getBoundingClientRect().top;
+            }
+        });
+
+        objeto.addEventListener("mousemove", function(event) {
+            if (isDragging) {
+                const x = event.clientX - offsetX;
+                const y = event.clientY - offsetY;
+                objeto.style.left = x + "px";
+                objeto.style.top = y + "px";
+                socket.emit("move", { x, y });
+            }
+        });
+
+        objeto.addEventListener("mouseup", function() {
+            isDragging = false;
+        });
+
+
+
+
+
+    </script>
+</body>
+</html>
